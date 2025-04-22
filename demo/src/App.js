@@ -12,6 +12,24 @@ const THRESHOLD = 1000;
 function App() {
   const [cart, setCart] = useState([])
   const[message,setMessage]=useState('')
+
+
+  let total = cart.map((item) => item.price * item.quantity).reduce((acc, elem) => acc += elem, 0)
+  console.log(total, "total")
+  const progress = Math.floor((total / THRESHOLD) * 100)
+
+  
+  useEffect(()=>{
+    const hasGift=cart.some((item)=>item.id===FREE_GIFT.id)
+    if(total>=THRESHOLD &&!hasGift){
+      setCart((prev)=>[...prev,{...FREE_GIFT,quantity:1}])
+      setMessage("Free Gift Added to your Cart")
+    }
+    else if(total<THRESHOLD && hasGift){
+    setCart((prev)=>prev.filter((item)=>item.id!==FREE_GIFT.id))
+     setMessage("")
+    }
+  },[total,cart])
   const PRODUCTS = [
     { id: 1, name: "Laptop", price: 500 },
     { id: 2, name: "Smartphone", price: 300 },
@@ -48,21 +66,9 @@ function App() {
   const removeItem = ((id) => {
     setCart((prev) => prev.filter((item) => item.id !== id))
   })
-  let total = cart.map((item) => item.price * item.quantity).reduce((acc, elem) => acc += elem, 0)
-  console.log(total, "total")
-  const progress = Math.floor((total / THRESHOLD) * 100)
 
-  useEffect(()=>{
-    const hasGift=cart.some((item)=>item.id===FREE_GIFT.id)
-    if(total>=THRESHOLD &&!hasGift){
-      setCart((prev)=>[...prev,{...FREE_GIFT,quantity:1}])
-      setMessage("Free Gift Added to your Cart")
-    }
-    else if(total<THRESHOLD && hasGift){
-    setCart((prev)=>prev.filter((item)=>item.id!==FREE_GIFT.id))
-     setMessage("")
-    }
-  })
+
+
 
   return (
     <div>
